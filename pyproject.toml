@@ -38,6 +38,7 @@ dependencies = [
     "pyyaml>=6.0",
     "fastapi>=0.104.0",
     "uvicorn>=0.24.0",
+    "prometheus-client>=0.20.0",
     "rich>=13.0.0",
 ]
 
@@ -46,6 +47,7 @@ dev = [
     "pytest>=8.0.0",
     "pytest-cov>=4.1.0",
     "ruff>=0.3.0",
+    "prometheus-client>=0.20.0",
 ]
 tracking = [
     "mlflow>=2.11.0",
@@ -72,6 +74,19 @@ where = ["src"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+exclude = [
+    "notebooks",
+    "*.ipynb",
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+]
+
+[tool.pyright]
+include = ["src", "tests", "scripts", "dags"]
+exclude = ["notebooks", "**/__pycache__", "**/.venv"]
+reportMissingImports = "warning"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

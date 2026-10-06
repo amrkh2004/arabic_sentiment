@@ -1,6 +1,7 @@
 import re
-from typing import Optional
+
 import pandas as pd
+
 
 class ArabicTextPreprocessor:
     """
@@ -36,7 +37,7 @@ class ArabicTextPreprocessor:
         text = re.sub(r"(.)\1{2,}", r"\1", text)
         return text
 
-    def clean(self, text: Optional[str]) -> str:
+    def clean(self, text: str | None) -> str:
         """
         Executes complete cleaning pipeline on a raw text string.
         """

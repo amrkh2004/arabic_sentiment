@@ -1,9 +1,10 @@
 import os
-from typing import Tuple, Dict, Any
+
 import torch
-import torch.nn as nn
+from onnxruntime.quantization import QuantType, quantize_dynamic
+from torch import nn
 from transformers import AutoTokenizer
-from onnxruntime.quantization import quantize_dynamic, QuantType
+
 
 class OnnxWrapper(nn.Module):
     """Wraps model to output only the logits tensor for ONNX export."""
@@ -15,6 +16,7 @@ class OnnxWrapper(nn.Module):
     def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
         return outputs.logits
+
 
 class ModelExporter:
     """Handles ONNX export (FP32) and Dynamic INT8 Quantization."""

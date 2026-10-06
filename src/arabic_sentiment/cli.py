@@ -1,14 +1,17 @@
 import argparse
 import sys
-import os
+
 from arabic_sentiment.core.config import AppConfig
+
 
 def main():
     parser = argparse.ArgumentParser(
         prog="arabic-sentiment",
         description="Production Arabic Sentiment Analysis CLI (Teacher-Student KD & INT8 ONNX)",
     )
-    parser.add_argument("--config", type=str, default="configs/config.yaml", help="Path to YAML config")
+    parser.add_argument(
+        "--config", type=str, default="configs/config.yaml", help="Path to YAML config"
+    )
 
     subparsers = parser.add_subparsers(dest="command", help="Sub-commands")
 
@@ -39,9 +42,12 @@ def main():
 
     if args.command == "prepare-data":
         from arabic_sentiment.data.dataset import SentimentDataModule
+
         dm = SentimentDataModule(config.data, config.teacher.model_name, seed=config.seed)
         train_df, val_df, test_df = dm.prepare_data()
-        print(f"Data prepared successfully! Train: {len(train_df)}, Val: {len(val_df)}, Test: {len(test_df)}")
+        print(
+            f"Data prepared successfully! Train: {len(train_df)}, Val: {len(val_df)}, Test: {len(test_df)}"
+        )
 
     elif args.command == "quantize":
         print("Exporting ONNX and applying INT8 quantization...")
@@ -49,6 +55,7 @@ def main():
 
     else:
         print(f"Command '{args.command}' ready to run in pipeline.")
+
 
 if __name__ == "__main__":
     main()
