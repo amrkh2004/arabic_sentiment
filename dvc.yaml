@@ -1,0 +1,21 @@
+stages:
+  prepare:
+    cmd: py scripts/prepare_dataset.py
+    deps:
+      - data/raw/reviews.csv
+      - scripts/prepare_dataset.py
+      - src/arabic_sentiment/data/preprocessor.py
+    outs:
+      - data/processed/train.csv
+      - data/processed/val.csv
+      - data/processed/test.csv
+
+  evaluate:
+    cmd: py scripts/evaluate_baseline.py
+    deps:
+      - data/processed/test.csv
+      - scripts/evaluate_baseline.py
+      - src/arabic_sentiment/api/service.py
+    metrics:
+      - metrics.json:
+          cache: false

@@ -1,0 +1,50 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: py scripts/prepare_dataset.py
+    deps:
+    - path: data/raw/reviews.csv
+      hash: md5
+      md5: ace8ae3b47976a99bd07c9c528d211a2
+      size: 4982092
+    - path: scripts/prepare_dataset.py
+      hash: md5
+      md5: 4b9648513d4921a34a71b319a6a1889e
+      size: 2761
+    - path: src/arabic_sentiment/data/preprocessor.py
+      hash: md5
+      md5: 3874c8efc7f12499c40ee9549a2e9b22
+      size: 2666
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 3af0e2c62117506032ac0f759bccc326
+      size: 1448527
+    - path: data/processed/train.csv
+      hash: md5
+      md5: bd456cb4d7a8591ff941558d281563d9
+      size: 6787856
+    - path: data/processed/val.csv
+      hash: md5
+      md5: 1e672d4936089d4522a9c6e1ddfcba1c
+      size: 1489609
+  evaluate:
+    cmd: py scripts/evaluate_baseline.py
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 3af0e2c62117506032ac0f759bccc326
+      size: 1448527
+    - path: scripts/evaluate_baseline.py
+      hash: md5
+      md5: 0acc306700456f9a482c2455fa3af081
+      size: 1875
+    - path: src/arabic_sentiment/api/service.py
+      hash: md5
+      md5: 19b2fad28ad5185713e6b79f90d1c483
+      size: 5524
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 17f2a6da720d65997547e33f9b1b089d
+      size: 129

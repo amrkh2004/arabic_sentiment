@@ -1,0 +1,11 @@
+{
+  "total_samples": 23982,
+  "train_samples": 16787,
+  "val_samples": 3597,
+  "test_samples": 3598,
+  "class_distribution": {
+    "negative": 11000,
+    "positive": 11000,
+    "neutral": 1982
+  }
+}
