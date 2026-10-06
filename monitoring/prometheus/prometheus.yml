@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+rule_files:
+  - "alert_rules.yml"
+
+scrape_configs:
+  - job_name: "arabic_sentiment_api"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["sentiment-api:8000", "sentiment-api-canary:8000"]
+        labels:
+          app: "arabic-sentiment"
+          env: "production"

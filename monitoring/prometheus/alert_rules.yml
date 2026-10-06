@@ -1,0 +1,32 @@
+groups:
+  - name: arabic_sentiment_alerts
+    rules:
+      # Alert 1: High Latency SLA Breach
+      - alert: HighInferenceLatency
+        expr: histogram_quantile(0.95, sum(rate(arabic_sentiment_latency_seconds_bucket[1m])) by (le)) > 0.20
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Inference p95 latency exceeded 200ms SLA"
+          description: "Current p95 latency is {{ $value }}s on endpoint {{ $labels.endpoint }}."
+
+      # Alert 2: Concept Drift Alert (Unusual Surge in Negative Reviews)
+      - alert: ConceptDriftNegativeSurge
+        expr: (sum(rate(arabic_sentiment_predictions_total{sentiment="negative"}[2m])) / sum(rate(arabic_sentiment_predictions_total[2m]))) > 0.60
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Potential Concept Drift: Negative reviews surge > 60%"
+          description: "Over 60% of customer reviews classified as negative in the last 2 minutes."
+
+      # Alert 3: Service Error Spike
+      - alert: ServiceErrorRateHigh
+        expr: (sum(rate(arabic_sentiment_requests_total{status=~"5.."}[1m])) / sum(rate(arabic_sentiment_requests_total[1m]))) > 0.05
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "API 5xx server errors exceeded 5%"
+          description: "High error rate detected in inference service."

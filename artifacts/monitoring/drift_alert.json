@@ -1,0 +1,7 @@
+{
+  "status": "CRITICAL_ALERT",
+  "reason": "Model drift detected in production traffic.",
+  "concept_drift": true,
+  "data_drift": true,
+  "recommended_action": "Trigger automated model retraining pipeline with DVC and review recent logs."
+}

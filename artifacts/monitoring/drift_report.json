@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-10-06T02:48:57.469585",
+  "baseline_samples": 3597,
+  "production_batch_samples": 350,
+  "concept_drift": {
+    "psi_score": 0.5247,
+    "jensen_shannon_distance": 0.2508,
+    "alert_threshold": 0.15,
+    "drift_detected": true,
+    "baseline_distribution": {
+      "positive": 0.459,
+      "neutral": 0.083,
+      "negative": 0.459
+    },
+    "production_distribution": {
+      "positive": 0.143,
+      "neutral": 0.171,
+      "negative": 0.686
+    }
+  },
+  "data_drift": {
+    "ks_statistic": 0.7203,
+    "ks_pvalue": 1.4306853030014891e-165,
+    "alert_threshold_pvalue": 0.05,
+    "drift_detected": true,
+    "baseline_mean_text_length": 111.5,
+    "production_mean_text_length": 34.4
+  },
+  "alert_triggered": true
+}

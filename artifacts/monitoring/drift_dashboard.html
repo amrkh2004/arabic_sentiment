@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Arabic Sentiment Pipeline - Drift Monitoring Dashboard</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .card { background: #1e293b; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #334155; }
+    .alert-banner { background: #ef4444; color: white; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; text-align: center; }
+    .ok-banner { background: #10b981; color: white; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; text-align: center; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .stat-card { background: #0f172a; padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid #334155; }
+    .stat-val { font-size: 1.8rem; font-weight: bold; color: #38bdf8; }
+    .bar-row { display: flex; align-items: center; margin: 0.5rem 0; }
+    .bar-label { width: 120px; font-weight: 500; }
+    .bar-outer { flex: 1; background: #334155; height: 20px; border-radius: 10px; overflow: hidden; }
+    .bar-inner { height: 100%; border-radius: 10px; }
+    .pos { background: #10b981; }
+    .neu { background: #f59e0b; }
+    .neg { background: #ef4444; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Drift Monitoring Dashboard</h1>
+    <p>Arabic Sentiment Analysis Production Model (Track A)</p>
+    <div class="alert-banner">⚠️ CRITICAL ALERT: Model Drift Detected! Immediate Retraining Recommended.</div>
+    <div class="grid">
+      <div class="stat-card"><div>PSI Score</div><div class="stat-val">0.5247</div><small>Threshold: 0.15</small></div>
+      <div class="stat-card"><div>KS Test p-value</div><div class="stat-val">1.43e-165</div><small>Threshold: 0.05</small></div>
+      <div class="stat-card"><div>Baseline Samples</div><div class="stat-val">3597</div></div>
+      <div class="stat-card"><div>Production Batch</div><div class="stat-val">350</div></div>
+    </div>
+    <div class="card" style="margin-top: 1.5rem;">
+      <h3>Concept Drift: Sentiment Class Shift</h3>
+      <p><b>Baseline:</b> Positive: 45.9% | Neutral: 8.3% | Negative: 45.9%</p>
+      <p><b>Production Batch:</b> Positive: 14.3% | Neutral: 17.1% | Negative: 68.6%</p>
+    </div>
+  </div>
+</body>
+</html>
