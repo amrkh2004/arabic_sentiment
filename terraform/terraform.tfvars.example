@@ -1,0 +1,4 @@
+aws_region    = "us-east-1"
+bucket_name   = "arabic-sentiment-dvc-remote-store"
+environment   = "production"
+force_destroy = false
