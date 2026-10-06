@@ -1,0 +1,16 @@
+service: "arabic_sentiment.serving.service:ArabicSentimentBentoService"
+labels:
+  owner: amrkh2004
+  project: arabic-sentiment
+  track: deep-learning
+include:
+  - "src/"
+  - "pyproject.toml"
+  - "README.md"
+python:
+  packages:
+    - bentoml>=1.2.0
+    - pydantic>=2.5.0
+    - numpy>=1.24.0
+    - scikit-learn>=1.3.0
+    - fastapi>=0.110.0
