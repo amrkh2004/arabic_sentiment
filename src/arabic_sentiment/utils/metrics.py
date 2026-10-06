@@ -1,11 +1,27 @@
+from __future__ import annotations
+
 import os
 import time
-from typing import Callable, Dict, Tuple, Any
-import numpy as np
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report
-import torch
+from collections.abc import Callable
+from typing import Any
 
-def compute_classification_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, float]:
+import numpy as np
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    precision_score,
+    recall_score,
+)
+
+try:
+    import torch
+except ImportError:
+    torch = None
+
+
+def compute_classification_metrics(
+    y_true: np.ndarray | list, y_pred: np.ndarray | list
+) -> dict[str, float]:
     """Calculates accuracy, Macro-F1, Precision, and Recall."""
     return {
         "accuracy": float(accuracy_score(y_true, y_pred)),
@@ -14,15 +30,20 @@ def compute_classification_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Di
         "macro_recall": float(recall_score(y_true, y_pred, average="macro", zero_division=0)),
     }
 
+
 def get_file_size_mb(file_path: str) -> float:
     """Returns file size in megabytes."""
     if not os.path.exists(file_path):
         return 0.0
     return os.path.getsize(file_path) / 1e6
 
-def count_model_parameters_m(model: torch.nn.Module) -> float:
+
+def count_model_parameters_m(model: Any) -> float:
     """Returns parameter count in millions."""
-    return sum(p.numel() for p in model.parameters()) / 1e6
+    if hasattr(model, "parameters"):
+        return sum(p.numel() for p in model.parameters()) / 1e6
+    return 0.0
+
 
 def measure_latency_ms(
     predict_fn: Callable[[Any, Any], Any],
@@ -31,7 +52,7 @@ def measure_latency_ms(
     warmup: int = 10,
     iters: int = 50,
     sync_cuda: bool = False,
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """
     Measures p50 (median) and p95 latency in milliseconds.
     """

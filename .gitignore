@@ -40,6 +40,7 @@ data/processed/*.csv
 # MLflow & DVC
 mlruns/
 mlartifacts/
+mlflow.db
 .dvc/cache
 .dvc/tmp
 
@@ -57,3 +58,6 @@ desktop.ini
 # Logs & Temporary Data
 *.log
 scratch/
+.coverage
+.coverage.*
+htmlcov/

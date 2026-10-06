@@ -1,18 +1,20 @@
-from typing import Dict, List, Tuple, Optional
 import numpy as np
 import pandas as pd
 import torch
-from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
 from sklearn.utils.class_weight import compute_class_weight
+from torch.utils.data import DataLoader, Dataset
 from transformers import AutoTokenizer, DataCollatorWithPadding
 
 from arabic_sentiment.core.config import DataConfig
 
+
 class SentimentDataset(Dataset):
     """PyTorch Dataset for tokenized Arabic sentiment reviews."""
 
-    def __init__(self, input_ids: List[List[int]], attention_masks: List[List[int]], labels: List[int]):
+    def __init__(
+        self, input_ids: list[list[int]], attention_masks: list[list[int]], labels: list[int]
+    ):
         self.input_ids = input_ids
         self.attention_masks = attention_masks
         self.labels = labels
@@ -20,12 +22,13 @@ class SentimentDataset(Dataset):
     def __len__(self) -> int:
         return len(self.labels)
 
-    def __getitem__(self, idx: int) -> Dict[str, torch.Tensor]:
+    def __getitem__(self, idx: int) -> dict[str, torch.Tensor]:
         return {
             "input_ids": torch.tensor(self.input_ids[idx], dtype=torch.long),
             "attention_mask": torch.tensor(self.attention_masks[idx], dtype=torch.long),
             "labels": torch.tensor(self.labels[idx], dtype=torch.long),
         }
+
 
 class SentimentDataModule:
     """
@@ -41,18 +44,22 @@ class SentimentDataModule:
         self.label2id = {name: i for i, name in enumerate(config.labels)}
         self.id2label = {i: name for name, i in self.label2id.items()}
 
-        self.train_df: Optional[pd.DataFrame] = None
-        self.val_df: Optional[pd.DataFrame] = None
-        self.test_df: Optional[pd.DataFrame] = None
-        self.class_weights: Optional[torch.Tensor] = None
+        self.train_df: pd.DataFrame | None = None
+        self.val_df: pd.DataFrame | None = None
+        self.test_df: pd.DataFrame | None = None
+        self.class_weights: torch.Tensor | None = None
 
-    def prepare_data(self, df: Optional[pd.DataFrame] = None) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def prepare_data(
+        self, df: pd.DataFrame | None = None
+    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """Loads data, maps labels, and performs stratified 80/10/10 split."""
         if df is None:
             df = pd.read_csv(self.config.raw_path)
 
         df = df[[self.config.text_column, self.config.label_column]].dropna()
-        df = df.rename(columns={self.config.text_column: "text", self.config.label_column: "label_name"})
+        df = df.rename(
+            columns={self.config.text_column: "text", self.config.label_column: "label_name"}
+        )
         df["label"] = df["label_name"].map(self.label2id)
         df = df.dropna(subset=["label"]).reset_index(drop=True)
         df["label"] = df["label"].astype(int)
@@ -95,7 +102,7 @@ class SentimentDataModule:
         )
         return SentimentDataset(enc["input_ids"], enc["attention_mask"], frame["label"].tolist())
 
-    def get_dataloaders(self, batch_size: int = 32) -> Tuple[DataLoader, DataLoader, DataLoader]:
+    def get_dataloaders(self, batch_size: int = 32) -> tuple[DataLoader, DataLoader, DataLoader]:
         """Constructs PyTorch DataLoaders with dynamic padding collator."""
         if self.train_df is None:
             self.prepare_data()
@@ -106,8 +113,14 @@ class SentimentDataModule:
 
         collator = DataCollatorWithPadding(self.tokenizer)
 
-        train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, collate_fn=collator)
-        val_loader = DataLoader(val_ds, batch_size=batch_size * 2, shuffle=False, collate_fn=collator)
-        test_loader = DataLoader(test_ds, batch_size=batch_size * 2, shuffle=False, collate_fn=collator)
+        train_loader = DataLoader(
+            train_ds, batch_size=batch_size, shuffle=True, collate_fn=collator
+        )
+        val_loader = DataLoader(
+            val_ds, batch_size=batch_size * 2, shuffle=False, collate_fn=collator
+        )
+        test_loader = DataLoader(
+            test_ds, batch_size=batch_size * 2, shuffle=False, collate_fn=collator
+        )
 
         return train_loader, val_loader, test_loader
