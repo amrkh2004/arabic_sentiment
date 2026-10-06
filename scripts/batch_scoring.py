@@ -45,7 +45,9 @@ def run_batch_scoring(
 
     df.to_csv(out_file, index=False, encoding="utf-8-sig")
 
-    print(f"Batch Scoring completed in {elapsed_s:.2f} seconds ({len(texts)/elapsed_s:.1f} samples/sec)")
+    print(
+        f"Batch Scoring completed in {elapsed_s:.2f} seconds ({len(texts) / elapsed_s:.1f} samples/sec)"
+    )
     print(f"Results saved successfully to: {out_file}")
     print("=" * 60)
     return out_file

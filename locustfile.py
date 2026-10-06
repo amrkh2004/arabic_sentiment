@@ -7,7 +7,8 @@ Monitors throughput (RPS), error rate, and verifies that p95 latency satisfies S
 from __future__ import annotations
 
 import random
-from locust import HttpUser, task, between, events
+
+from locust import HttpUser, between, events, task
 
 # Realistic Arabic e-commerce test sentences
 SAMPLE_REVIEWS = [
@@ -26,6 +27,7 @@ SAMPLE_REVIEWS = [
 
 class SentimentLoadTestUser(HttpUser):
     """Simulates a client sending sentiment inference requests."""
+
     wait_time = between(0.1, 0.5)
 
     @task(8)
