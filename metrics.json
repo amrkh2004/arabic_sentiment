@@ -1,0 +1,23 @@
+{
+  "accuracy": 0.504,
+  "macro_f1": 0.4395,
+  "macro_precision": 0.5861,
+  "macro_recall": 0.5235,
+  "test_samples": 500,
+  "service_single_latency": {
+    "mean_ms": 0.02,
+    "std_ms": 0.0,
+    "p50_ms": 0.02,
+    "p95_ms": 0.02,
+    "p99_ms": 0.02,
+    "throughput_samples_per_sec": 64127.23
+  },
+  "service_batch8_latency": {
+    "mean_ms": 0.12,
+    "std_ms": 0.01,
+    "p50_ms": 0.12,
+    "p95_ms": 0.12,
+    "p99_ms": 0.13,
+    "throughput_samples_per_sec": 66666.67
+  }
+}

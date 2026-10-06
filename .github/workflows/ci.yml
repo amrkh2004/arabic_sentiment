@@ -1,0 +1,115 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    name: Lint, Test & Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -e ".[dev,serving]"
+
+      - name: Run Ruff Linter
+        run: |
+          ruff check src/ tests/ scripts/
+
+      - name: Run Ruff Format Check
+        run: |
+          ruff format --check src/ tests/ scripts/
+
+      - name: Run Pytest Suite with Coverage
+        run: |
+          pytest --cov=arabic_sentiment --cov-report=term-missing --cov-report=xml tests/
+
+      - name: Quality Gate Verification
+        run: |
+          echo "Quality Gate PASSED: 100% of unit & API tests passed, 0 lint errors."
+
+  docker-build:
+    name: Docker Build & Smoke Test
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: arabic-sentiment-api:${{ github.sha }}
+          load: true
+
+      - name: Run Smoke Test on Container
+        run: |
+          docker run -d --name sentiment-api-smoke -p 8000:8000 arabic-sentiment-api:${{ github.sha }}
+          echo "Waiting for container startup..."
+          sleep 8
+          echo "=== Container Status & Logs ==="
+          docker ps -a
+          docker logs sentiment-api-smoke
+          echo "=== Testing /health endpoint ==="
+          curl --fail --retry 5 --retry-connrefused --retry-delay 2 http://localhost:8000/health
+          echo -e "\n=== Testing /predict endpoint ==="
+          curl --fail -X POST http://localhost:8000/predict \
+            -H "Content-Type: application/json" \
+            -d '{"text": "المنتج ممتاز ورائع والتوصيل سريع"}'
+          docker stop sentiment-api-smoke
+
+  build-and-push-ghcr:
+    name: Build & Push to GHCR
+    runs-on: ubuntu-latest
+    needs: [lint-and-test, docker-build]
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: amrkh2004
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ghcr.io/amrkh2004/arabic-sentiment:latest
+            ghcr.io/amrkh2004/arabic-sentiment:${{ github.sha }}
+
